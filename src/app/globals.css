@@ -1,0 +1,148 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 220 27% 98%;
+    --canvas: 220 27% 98%;
+    --foreground: 215 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 30% 15%;
+
+    --primary: 214 52% 24%;
+    --primary-foreground: 210 40% 98%;
+
+    --gold: 46 67% 47%;
+    --gold-foreground: 43 40% 12%;
+
+    --secondary: 220 20% 95%;
+    --secondary-foreground: 214 52% 24%;
+
+    --muted: 220 20% 95%;
+    --muted-foreground: 215 15% 45%;
+
+    --accent: 210 65% 95%;
+    --accent-foreground: 214 52% 24%;
+
+    --destructive: 3 65% 48%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 152 45% 32%;
+    --success-foreground: 210 40% 98%;
+
+    --border: 220 18% 90%;
+    --input: 220 18% 88%;
+    --ring: 214 52% 40%;
+
+    --radius: 14px;
+
+    --font-serif: "Source Serif 4", Georgia, "Times New Roman", serif;
+    --font-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, monospace;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  ::selection {
+    background-color: hsl(var(--gold) / 0.25);
+    color: hsl(var(--primary));
+  }
+
+  :focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif tracking-tight text-primary-800;
+    letter-spacing: -0.01em;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: hsl(var(--border));
+    border-radius: 999px;
+    border: 2px solid hsl(var(--background));
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: hsl(var(--primary) / 0.35);
+  }
+}
+
+@layer components {
+  /* Signature texture: a faint ruled "index card" background used sparingly
+     on archival surfaces (hero panel, empty states) to nod at the card
+     catalog this product is quietly descended from. */
+  .archive-ruled {
+    background-image: repeating-linear-gradient(
+      180deg,
+      transparent 0px,
+      transparent 31px,
+      hsl(var(--border) / 0.7) 32px
+    );
+    background-position: 0 6px;
+  }
+
+  .gold-rule {
+    position: relative;
+  }
+  .gold-rule::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -10px;
+    height: 2px;
+    width: 42px;
+    background: linear-gradient(90deg, hsl(var(--gold)), hsl(var(--gold) / 0.15));
+    border-radius: 999px;
+  }
+
+  .prose-editor {
+    @apply font-serif text-[1.05rem] leading-[1.85] text-primary-900;
+  }
+  .prose-editor h1 { @apply text-3xl font-semibold mb-4 mt-2; }
+  .prose-editor h2 { @apply text-2xl font-semibold mb-3 mt-8; }
+  .prose-editor h3 { @apply text-xl font-semibold mb-2 mt-6; }
+  .prose-editor p { @apply mb-4; }
+  .prose-editor strong { @apply font-semibold text-primary-800; }
+  .prose-editor a { @apply text-primary-600 underline decoration-gold-400 decoration-2 underline-offset-2; }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted)) 0%,
+      hsl(var(--border)) 50%,
+      hsl(var(--muted)) 100%
+    );
+    background-size: 1400px 100%;
+  }
+}

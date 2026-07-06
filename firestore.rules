@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// All reads/writes in this app go through Next.js API routes using the
+// Firebase Admin SDK (which bypasses these rules after verifying the
+// caller's ID token). The client SDK is used ONLY for Authentication, never
+// for direct Firestore access — so client-side access is denied entirely.
+// If you later add direct client reads (e.g. real-time listeners), replace
+// the rule below with per-user scoping, e.g.:
+//
+//   match /users/{uid}/{document=**} {
+//     allow read, write: if request.auth != null && request.auth.uid == uid;
+//   }
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
