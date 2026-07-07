@@ -1,5 +1,6 @@
 export type HistoryAction =
   | "imported"
+  | "generated"
   | "edited"
   | "exported"
   | "approved"

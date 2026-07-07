@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { api } from "@/lib/api-client";
 import { toast } from "@/hooks/use-toast";
+import { GenerateDialog } from "@/components/dashboard/generate-dialog";
 
 export function Hero() {
   const router = useRouter();
@@ -88,6 +89,15 @@ export function Hero() {
           <p className="mt-4 text-xs text-muted-foreground">
             Works best with public, article-style encyclopedia pages.
           </p>
+
+          <div className="mt-8 flex items-center justify-center gap-3">
+            <div className="h-px w-10 bg-border" />
+            <span className="text-xs uppercase tracking-wide text-muted-foreground">or</span>
+            <div className="h-px w-10 bg-border" />
+          </div>
+          <div className="mt-4 flex justify-center">
+            <GenerateDialog />
+          </div>
         </div>
       </div>
     </section>

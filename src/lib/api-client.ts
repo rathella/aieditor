@@ -106,5 +106,23 @@ export const api = {
         headers: await authHeaders({ "Content-Type": "application/json" }),
         body: JSON.stringify(settings),
       }).then((r) => handle<{ settings: AppSettings }>(r)),
+    getApiKeyStatus: async () =>
+      fetch("/api/settings/api-key", { headers: await authHeaders() }).then((r) =>
+        handle<{ hasKey: boolean }>(r)
+      ),
+    saveApiKey: async (apiKey: string) =>
+      fetch("/api/settings/api-key", {
+        method: "PUT",
+        headers: await authHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ apiKey }),
+      }).then((r) => handle<{ hasKey: boolean }>(r)),
+  },
+  generate: {
+    create: async (title: string, brief?: string) =>
+      fetch("/api/generate", {
+        method: "POST",
+        headers: await authHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({ title, brief }),
+      }).then((r) => handle<{ article: Article }>(r)),
   },
 };

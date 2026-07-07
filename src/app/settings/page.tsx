@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
   CardDescription,
-  CardFooter,
 } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
@@ -34,14 +33,35 @@ function SettingsContent() {
   const [counts, setCounts] = useState<{ total: number; approved: number } | null>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [hasApiKey, setHasApiKey] = useState(false);
+  const [apiKeyInput, setApiKeyInput] = useState("");
+  const [savingKey, setSavingKey] = useState(false);
 
   useEffect(() => {
-    api.settings.get().then((res) => {
-      setSettings(res.settings);
-      setCounts(res.counts);
-      setLoading(false);
-    });
+    Promise.all([api.settings.get(), api.settings.getApiKeyStatus()]).then(
+      ([settingsRes, keyRes]) => {
+        setSettings(settingsRes.settings);
+        setCounts(settingsRes.counts);
+        setHasApiKey(keyRes.hasKey);
+        setLoading(false);
+      }
+    );
   }, []);
+
+  async function handleSaveApiKey() {
+    if (!apiKeyInput.trim()) return;
+    setSavingKey(true);
+    try {
+      await api.settings.saveApiKey(apiKeyInput.trim());
+      setHasApiKey(true);
+      setApiKeyInput("");
+      toast.success("API key saved");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Couldn't save the API key.");
+    } finally {
+      setSavingKey(false);
+    }
+  }
 
   async function persist(next: AppSettings) {
     setSettings(next);
@@ -208,31 +228,46 @@ function SettingsContent() {
         </CardContent>
       </Card>
 
-      <Card className="opacity-70">
+      <Card>
         <CardHeader>
-          <CardTitle>Future AI Provider</CardTitle>
+          <CardTitle>AI Generation</CardTitle>
           <CardDescription>
-            Connect a provider once AI-assisted features launch. Not active yet.
+            Add an OpenAI API key to generate new drafts in your approved
+            articles&apos; style. Needs at least 3 approved articles.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Select disabled>
-            <SelectTrigger className="w-56">
-              <SelectValue placeholder="Choose a provider" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="openai">OpenAI</SelectItem>
-              <SelectItem value="anthropic">Anthropic</SelectItem>
-              <SelectItem value="google">Google</SelectItem>
-            </SelectContent>
-          </Select>
+        <CardContent className="space-y-3">
+          <div className="flex items-center gap-2 text-sm">
+            <span
+              className={`h-2 w-2 rounded-full ${hasApiKey ? "bg-success" : "bg-muted-foreground/40"}`}
+            />
+            {hasApiKey ? "API key connected" : "No API key set yet"}
+          </div>
+          <div className="flex gap-2">
+            <Input
+              type="password"
+              placeholder={hasApiKey ? "sk-••••••••••••••••" : "sk-..."}
+              value={apiKeyInput}
+              onChange={(e) => setApiKeyInput(e.target.value)}
+            />
+            <Button onClick={handleSaveApiKey} disabled={savingKey || !apiKeyInput.trim()}>
+              {savingKey && <Loader2 className="h-4 w-4 animate-spin" />}
+              Save
+            </Button>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Get a key at{" "}
+            <a
+              href="https://platform.openai.com/api-keys"
+              target="_blank"
+              rel="noreferrer"
+              className="underline"
+            >
+              platform.openai.com/api-keys
+            </a>
+            . Stored securely server-side, never sent back to the browser.
+          </p>
         </CardContent>
-        <CardFooter>
-          <Button disabled variant="outline" size="sm">
-            {saving && <Loader2 className="h-3.5 w-3.5 animate-spin" />}
-            Coming soon
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );

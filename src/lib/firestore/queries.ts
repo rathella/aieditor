@@ -21,6 +21,10 @@ function settingsDoc(uid: string) {
   return getAdminDb().collection("users").doc(uid).collection("settings").doc("app");
 }
 
+function secretsDoc(uid: string) {
+  return getAdminDb().collection("users").doc(uid).collection("settings").doc("secrets");
+}
+
 // ---------------------------------------------------------------------------
 // Articles
 // ---------------------------------------------------------------------------
@@ -209,4 +213,23 @@ export async function getSettings(uid: string): Promise<AppSettings> {
 export async function saveSettings(uid: string, settings: AppSettings): Promise<AppSettings> {
   await settingsDoc(uid).set(settings, { merge: false });
   return settings;
+}
+
+// ---------------------------------------------------------------------------
+// AI provider secrets (kept in a separate doc so the general settings
+// GET endpoint never has to think about redacting them)
+// ---------------------------------------------------------------------------
+
+export async function saveOpenAiApiKey(uid: string, apiKey: string): Promise<void> {
+  await secretsDoc(uid).set({ openaiApiKey: apiKey }, { merge: true });
+}
+
+export async function getOpenAiApiKey(uid: string): Promise<string | null> {
+  const snap = await secretsDoc(uid).get();
+  if (!snap.exists) return null;
+  return (snap.data()?.openaiApiKey as string | undefined) ?? null;
+}
+
+export async function hasOpenAiApiKey(uid: string): Promise<boolean> {
+  return (await getOpenAiApiKey(uid)) !== null;
 }
